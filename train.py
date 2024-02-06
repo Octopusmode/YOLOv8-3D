@@ -28,7 +28,6 @@ import tqdm
 import imgaug.augmenters as iaa
 from imgaug.augmentables import KeypointsOnImage
 
-
 os.environ["CUDA_DEVICE_ORDER"]="PCI_BUS_ID"
 os.environ["CUDA_VISIBLE_DEVICES"]="1"
 
@@ -52,14 +51,14 @@ AUGMENTATION = False
 # select_model = 'vgg16'
 # select_model = 'vgg19'
 # select_model = 'efficientnetb0'
-# select_model = 'efficientnetb5'
-select_model = 'mobilenetv2'
+select_model = 'efficientnetb5'
+# select_model = 'mobilenetv2'
 
 
 
 
-label_dir = '/home/bharath/Downloads/test_codes/3Dbbox/kitti/training/label_2/'
-image_dir = '/home/bharath/Downloads/test_codes/3Dbbox/kitti/training/image_2/'
+label_dir = '/home/bksp/jupyter/octopusmode/dataset/training/label_2'
+image_dir = '/home/bksp/jupyter/octopusmode/dataset/training/image_2'
 
 
 
@@ -97,7 +96,7 @@ def parse_annotation(label_dir, image_dir):
     for label_file in os.listdir(label_dir):
         image_file = label_file.replace('txt', 'png')
 
-        for line in open(label_dir + label_file).readlines():
+        for line in open(label_dir + '/' + label_file).readlines():
             line = line.strip().split(' ')
             truncated = np.abs(float(line[1]))
             occluded  = np.abs(float(line[2]))
@@ -169,7 +168,7 @@ def prepare_input_and_output(train_inst):
     xmax = train_inst['xmax'] #+ np.random.randint(-MAX_JIT, MAX_JIT+1)
     ymax = train_inst['ymax'] #+ np.random.randint(-MAX_JIT, MAX_JIT+1)
     
-    img = cv2.imread(image_dir + train_inst['image'])
+    img = cv2.imread(image_dir + '/' + train_inst['image'])
     img = copy.deepcopy(img[ymin:ymax+1,xmin:xmax+1]).astype(np.float32)
     
     # re-color the image
@@ -362,7 +361,7 @@ if __name__ == '__main__':
         os.makedirs(select_model)
     early_stop  = EarlyStopping(monitor='val_loss', min_delta=0.001, patience=10, mode='min', verbose=1)
     checkpoint  = ModelCheckpoint('./'+select_model+'/'+select_model+'_weights.h5', monitor='val_loss', verbose=1, save_best_only=True)
-    tensorboard = TensorBoard(log_dir='./'+select_model+'/logs/', histogram_freq=0, write_graph=True, write_images=False)
+    tensorboard = TensorBoard(log_dir='./'+select_model+'/logs/', histogram_freq=1, write_graph=True, write_images=True)
 
     all_exams = len(all_objs) 
     trv_split  = int(0.85*all_exams)
@@ -478,4 +477,3 @@ if __name__ == '__main__':
     plt.savefig('./'+select_model+'/'+select_model+'_results_plot.png')
     # Show the plot
     # plt.show()
-

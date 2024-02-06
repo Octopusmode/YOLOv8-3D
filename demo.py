@@ -20,8 +20,8 @@ from train import *
 # select_model = 'vgg11'
 # select_model = 'vgg16'
 # select_model = 'vgg19'
-select_model = 'efficientnetb0'
-# select_model = 'efficientnetb5'
+# select_model = 'efficientnetb0'
+select_model = 'efficientnetb5'
 # select_model = 'mobilenetv2'
 
 
@@ -265,8 +265,8 @@ while True:
 
 
     # Display the frame
-    cv2.imshow("2D", img2)
-    cv2.imshow("3D", img3)
+    # cv2.imshow("2D", img2)
+    # cv2.imshow("3D", img3)
     out.write(img3)
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break

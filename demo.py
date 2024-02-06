@@ -21,12 +21,12 @@ from train import *
 # select_model = 'vgg16'
 # select_model = 'vgg19'
 # select_model = 'efficientnetb0'
-select_model = 'efficientnetb5'
-# select_model = 'mobilenetv2'
+# select_model = 'efficientnetb5'
+select_model = 'mobilenetv2'
 
 
 # Load the 3D model
-bbox3d_model = load_model('./'+select_model+'/'+select_model+'_weights.h5')
+bbox3d_model = load_model(f'/home/bksp/jupyter/octopusmode/YOLOv8-3D/{select_model}/{select_model}_weights.h5')
 bin_size = 6
 input_shape = (224, 224, 3)
 trained_classes = ['Car', 'Cyclist', 'Pedestrian']
@@ -56,7 +56,7 @@ yolo_classes = ['Pedestrian', 'Cyclist', 'Car', 'motorcycle', 'airplane', 'Van',
 
 
 # Load the video
-video = cv2.VideoCapture('./assets/2011_10_03_drive_0034_sync_video_trimmed.mp4')
+video = cv2.VideoCapture('/home/bksp/jupyter/octopusmode/video.mp4')
 
 
 ### svae results
@@ -66,11 +66,11 @@ frame_height = int(video.get(cv2.CAP_PROP_FRAME_HEIGHT))
 fps = int(video.get(cv2.CAP_PROP_FPS))
 # Define the codec and create a VideoWriter object
 fourcc = cv2.VideoWriter_fourcc(*'mp4v')  # Change the codec if needed (e.g., 'XVID')
-out = cv2.VideoWriter(select_model+'_output_video.mp4', fourcc, 15, (frame_width, frame_height))
+out = cv2.VideoWriter(select_model+'_output_video.mp4', fourcc, 1, (frame_width, frame_height))
 
 
 tracking_trajectories = {}
-def process2D(image, track = True, device ='cpu'):
+def process2D(image, track = False, device = 0):
     bboxes = []
     if track is True:
         results = bbox2d_model.track(image, verbose=False, device=device, persist=True)
@@ -221,9 +221,13 @@ while True:
     plot3dbev = Plot3DBoxBev(P2)  
 
     ## process 2D and 3D boxes
+    start_2d = time.time()
     img2D, bboxes2d = process2D(img2, track=TracK)
+    end_2d = time.time() - start_2d
     if len(bboxes2d) > 0:
+        start_3d = time.time()
         bboxes3D = process3D(img, bboxes2d)
+        end_3d = time.time() - start_3d
         if len(bboxes3D) > 0:
             for bbox_, dim, alpha, theta_ray, orient, conf,  classes, location, objID in bboxes3D:
                 plot3d(img3, P2, bbox_, dim, alpha, theta_ray)
@@ -255,22 +259,39 @@ while True:
 
     # Calculate the current time in seconds
     current_time = video.get(cv2.CAP_PROP_POS_MSEC) / 1000.0
-    if frameId % 20 == 0:  # Calculate FPS every 10 frames
-        end_time = time.time()
-        elapsed_time = end_time - start_time
-        fps_current = frameId / elapsed_time
-        fps =  f'FPS: {fps_current:.2f}'
-        # print(f'Frame: {frameId}, FPS: {fps_current:.2f}')
+    # if frameId % 20 == 0:  # Calculate FPS every 10 frames
+    #     end_time = time.time()
+    #     elapsed_time = end_time - start_time
+    #     fps_current = frameId / elapsed_time
+    #     fps =  f'FPS: {fps_current:.2f}'
+    #     print(f'Frame: {frameId}, FPS: {fps_current:.2f}')
+    end_time = time.time()
+    elapsed_time = end_time - start_time
+    fps_current = frameId / elapsed_time
+    fps =  f'FPS: {fps_current:.2f}'
     cv2.putText(img3, select_model+' '+fps, (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 1, cv2.LINE_AA)
 
-
+    print(f'ID{frameId}:{end_2d=:.3f} {end_3d=:.3f} {fps=}\r', end='')
+    
     # Display the frame
     # cv2.imshow("2D", img2)
     # cv2.imshow("3D", img3)
-    out.write(img3)
-    if cv2.waitKey(1) & 0xFF == ord('q'):
+
+    if img2.shape[0] != img3.shape[0]:
+        height = min(img2.shape[0], img3.shape[0])
+        img2 = cv2.resize(img2, (img2.shape[1], height)) # измените размер img1
+        img3 = cv2.resize(img3, (img3.shape[1], height)) # измените размер img2
+
+    img_comb = cv2.hconcat([img2, img3])
+
+
+
+    cv2.imwrite(f'./{select_model}_output/{frameId}_{select_model}_frame.png', img_comb)
+    # out.write(img3)
+    if (cv2.waitKey(1) & 0xFF == ord('q')) or frameId > 10:
         break
 
 # Release the video capture featuresect
+out.release()
 video.release()
 cv2.destroyAllWindows()

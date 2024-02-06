@@ -51,8 +51,8 @@ AUGMENTATION = False
 # select_model = 'vgg16'
 # select_model = 'vgg19'
 # select_model = 'efficientnetb0'
-select_model = 'efficientnetb5'
-# select_model = 'mobilenetv2'
+# select_model = 'efficientnetb5'
+select_model = 'mobilenetv2'
 
 
 

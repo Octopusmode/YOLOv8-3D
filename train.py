@@ -54,13 +54,8 @@ AUGMENTATION = False
 # select_model = 'efficientnetb5'
 select_model = 'mobilenetv2'
 
-
-
-
-label_dir = '/home/bksp/jupyter/octopusmode/dataset/training/label_2'
-image_dir = '/home/bksp/jupyter/octopusmode/dataset/training/image_2'
-
-
+label_dir = '/mnt/m/KITTI/label_2/'
+image_dir = '/mnt/m/KITTI/images/'
 
 seq = iaa.Sequential([
     iaa.Crop(px=(0, 7)),  # will randomly crop between 0 to 7 pixels from the left side.

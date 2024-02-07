@@ -1,4 +1,6 @@
 efficientnetb5
 mobilenetv2
+source/
+out/
 *.onnx
 *.pb

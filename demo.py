@@ -12,6 +12,13 @@ from libs.bbox3d_utils import *
 from libs.Plotting import *
 from train import * 
 
+from tensorflow.keras.applications import *
+from tensorflow.keras.models import *
+from tensorflow.keras.optimizers import *
+from tensorflow.keras.layers import *
+from tensorflow.keras.callbacks import TensorBoard, EarlyStopping, ModelCheckpoint
+from tensorflow.keras.losses import Loss
+
 
 ####### select model  ########
 # select_model = 'resnet50'
@@ -26,7 +33,7 @@ select_model = 'mobilenetv2'
 
 
 # Load the 3D model
-bbox3d_model = load_model(f'/home/bksp/jupyter/octopusmode/YOLOv8-3D/{select_model}/{select_model}_weights.h5')
+bbox3d_model = load_model(f'/home/mosminin/veh3d/YOLOv8-3D/mobilenetv2/mobilenetv2_weights.h5')
 bin_size = 6
 input_shape = (224, 224, 3)
 trained_classes = ['Car', 'Cyclist', 'Pedestrian']
@@ -42,8 +49,6 @@ dims_avg = {'Car': np.array([1.52131309, 1.64441358, 3.85728004]),
 'Tram': np.array([3.56020305,  2.40172589, 18.60659898])}
 # print(dims_avg)
 
-
-
 # Load a 2D model
 bbox2d_model = YOLO('yolov8n-seg.pt')  # load an official model
 # set model parameters
@@ -54,10 +59,8 @@ bbox2d_model.overrides['max_det'] = 1000  # maximum number of detections per ima
 bbox2d_model.overrides['classes'] = 2 ## define classes
 yolo_classes = ['Pedestrian', 'Cyclist', 'Car', 'motorcycle', 'airplane', 'Van', 'train', 'Truck', 'boat']
 
-
 # Load the video
-video = cv2.VideoCapture('/home/bksp/jupyter/octopusmode/video.mp4')
-
+video = cv2.VideoCapture('/mnt/m/dev/veh3d/vehicle_3D/YOLOv8-3D/source_video.mp4')
 
 ### svae results
 # Get video information (frame width, height, frames per second)
@@ -66,10 +69,10 @@ frame_height = int(video.get(cv2.CAP_PROP_FRAME_HEIGHT))
 fps = int(video.get(cv2.CAP_PROP_FPS))
 # Define the codec and create a VideoWriter object
 fourcc = cv2.VideoWriter_fourcc(*'mp4v')  # Change the codec if needed (e.g., 'XVID')
-out = cv2.VideoWriter(select_model+'_output_video.mp4', fourcc, 1, (frame_width, frame_height))
-
+out = cv2.VideoWriter('' + select_model+'_output_video.mp4', fourcc, 5, (frame_width, frame_height))
 
 tracking_trajectories = {}
+
 def process2D(image, track = False, device = 0):
     bboxes = []
     if track is True:
@@ -155,7 +158,6 @@ def process2D(image, track = False, device = 0):
 
     return image, bboxes
 
-
 def process3D(img, bboxes2d):
     DIMS = []
     bboxes = []
@@ -199,14 +201,11 @@ def process3D(img, bboxes2d):
 
     return bboxes
 
-
-
-
 frameId = 0
 start_time = time.time()
 fps = str()
 BEV_plot = True
-TracK = True
+TracK = False
 
 # Process each frame of the video
 while True:
@@ -284,10 +283,9 @@ while True:
 
     img_comb = cv2.hconcat([img2, img3])
 
-
-
     cv2.imwrite(f'./{select_model}_output/{frameId}_{select_model}_frame.png', img_comb)
-    # out.write(img3)
+
+    out.write(img3)
     if (cv2.waitKey(1) & 0xFF == ord('q')) or frameId > 10:
         break
 

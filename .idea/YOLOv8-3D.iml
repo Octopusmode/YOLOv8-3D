@@ -5,7 +5,7 @@
       <excludeFolder url="file://$MODULE_DIR$/.venv" />
       <excludeFolder url="file://$MODULE_DIR$/mobilenetv2" />
     </content>
-    <orderEntry type="jdk" jdkName="Python 3.10 (YOLOv8-3D)" jdkType="Python SDK" />
+    <orderEntry type="jdk" jdkName="Python 3.10.12 WSL (ubuntu_cv_2204): (/home/mosminin/veh3d/YOLOv8-3D/.venv/bin/python)" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
   </component>
   <component name="PyDocumentationSettings">

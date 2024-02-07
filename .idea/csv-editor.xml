@@ -3,13 +3,6 @@
   <component name="CsvFileAttributes">
     <option name="attributeMap">
       <map>
-        <entry key="\efficientnetb5\efficientnetb5_training_history.csv">
-          <value>
-            <Attribute>
-              <option name="separator" value="," />
-            </Attribute>
-          </value>
-        </entry>
         <entry key="\mobilenetv2\mobilenetv2_training_history.csv">
           <value>
             <Attribute>

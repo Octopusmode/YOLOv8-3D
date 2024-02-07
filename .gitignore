@@ -4,3 +4,4 @@ source/
 out/
 *.onnx
 *.pb
+*.mp4

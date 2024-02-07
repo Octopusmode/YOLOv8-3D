@@ -3,5 +3,5 @@
   <component name="Black">
     <option name="sdkName" value="tf210" />
   </component>
-  <component name="ProjectRootManager" version="2" project-jdk-name="Python 3.10 (YOLOv8-3D)" project-jdk-type="Python SDK" />
+  <component name="ProjectRootManager" version="2" project-jdk-name="Python 3.10.12 WSL (ubuntu_cv_2204): (/home/mosminin/veh3d/YOLOv8-3D/.venv/bin/python)" project-jdk-type="Python SDK" />
 </project>
